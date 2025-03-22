@@ -1,0 +1,30 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - express_network
+
+  nodebackend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_backend
+    environment:
+      - PORT=4455
+      - ELASTICSEARCH_NODE=http://elasticsearch:9200
+    ports:
+      - "4455:4455"
+    depends_on:
+      - elasticsearch
+    networks:
+      - express_network
+
+networks:
+  express_network:
